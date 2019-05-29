@@ -6,6 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import me.martonpito.MovieDBApplication
 import me.martonpito.moviedbapp.base.BasePresenter
+import me.martonpito.moviedbapp.eventbus.EventBus
 import me.martonpito.moviedbapp.network.MovieDBServer
 import javax.inject.Inject
 
@@ -14,11 +15,24 @@ class MainPresenter: BasePresenter<IMainScreen> {
     @Inject
     lateinit var server: MovieDBServer
 
+    @Inject
+    lateinit var eventBus: EventBus
+
     private var mainScreen: IMainScreen? = null
     private var compositeDisposable: CompositeDisposable? = null
 
     init {
         MovieDBApplication.movieDBComponent.inject(this)
+        compositeDisposable = CompositeDisposable()
+        val searchDisposable = eventBus.searchResult
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ searchText ->
+                getMovieList(searchText)
+            }, { error ->
+                error.printStackTrace()
+            })
+        compositeDisposable?.add(searchDisposable)
     }
 
     fun getMovieList(searchText: String) {
@@ -33,6 +47,7 @@ class MainPresenter: BasePresenter<IMainScreen> {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
                 Log.d(TAG, response.toString())
+                mainScreen?.onMoviewListReady(response.results)
             }, { error ->
                 error.printStackTrace()
             })
@@ -41,7 +56,6 @@ class MainPresenter: BasePresenter<IMainScreen> {
 
     override fun addView(view: IMainScreen) {
         mainScreen = view
-        compositeDisposable = CompositeDisposable()
     }
 
     override fun removeView() {

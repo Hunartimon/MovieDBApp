@@ -6,15 +6,71 @@
         android:layout_height="match_parent"
         tools:context=".ui.main.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/tb_main"
+    <android.support.design.widget.AppBarLayout
+            android:id="@+id/ab_main"
             android:layout_width="match_parent"
-            android:layout_height="64dp"/>
+            android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/tb_main"
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
+            <RelativeLayout
+                    android:id="@+id/search_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="gone">
+
+                <ImageButton
+                        android:id="@+id/ib_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_back" />
+
+                <EditText
+                        android:id="@+id/search_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_toStartOf="@id/ib_close"
+                        android:layout_toEndOf="@id/ib_back"
+                        android:background="@android:color/transparent"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:maxLines="1" />
+
+                <ImageButton
+                        android:id="@+id/ib_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="10dp"
+                        android:background="@android:color/transparent"
+                        android:visibility="gone"
+                        android:src="@drawable/ic_close"/>
+            </RelativeLayout>
+            <ImageButton
+                    android:id="@+id/ib_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="20dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_search"/>
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tb_main"/>
+            android:layout_below="@id/ab_main"/>
 
 </RelativeLayout>
