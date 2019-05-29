@@ -3,10 +3,8 @@ package me.martonpito.moviedbapp.ui.main
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
-import android.graphics.PorterDuff
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,14 +12,13 @@ import android.widget.LinearLayout
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import me.martonpito.MovieDBApplication
 import me.martonpito.moviedbapp.R
 import me.martonpito.moviedbapp.eventbus.EventBus
 import me.martonpito.moviedbapp.network.model.Movie
+import me.martonpito.moviedbapp.network.model.MovieDetails
 import me.martonpito.moviedbapp.ui.main.adapter.MainAdapter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -51,6 +48,7 @@ class MainActivity : AppCompatActivity(), IMainScreen {
         presenter.getMovieList("")
 
         adapter = MainAdapter()
+        adapter?.setHasStableIds(true)
         rv_content.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         rv_content.adapter = adapter
 
@@ -81,7 +79,7 @@ class MainActivity : AppCompatActivity(), IMainScreen {
             hideSearchBar(true)
         }
         val subscription = RxTextView.textChanges(search_field)
-            .debounce(500, TimeUnit.MICROSECONDS)
+            .debounce(1000, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
@@ -143,7 +141,26 @@ class MainActivity : AppCompatActivity(), IMainScreen {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    override fun onMoviewListReady(movieList: List<Movie>) {
-        adapter?.setList(movieList)
+    override fun onMovieListReady(movieList: List<Movie>) {
+        if (movieList.isEmpty()) {
+            rv_content?.visibility = View.GONE
+            tv_empty_result?.visibility = View.VISIBLE
+        } else {
+            rv_content?.visibility = View.VISIBLE
+            tv_empty_result?.visibility = View.GONE
+            adapter?.setList(movieList)
+        }
+    }
+
+    override fun onMoviewDetailsReady(movieDetails: MovieDetails) {
+        adapter?.onItemChange(movieDetails)
+    }
+
+    override fun showProgressBar() {
+        progress_bar?.visibility = View.VISIBLE
+    }
+
+    override fun hideProgressBar() {
+        progress_bar?.visibility = View.GONE
     }
 }

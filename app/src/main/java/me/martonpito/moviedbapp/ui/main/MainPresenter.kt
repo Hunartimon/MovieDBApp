@@ -1,6 +1,7 @@
 package me.martonpito.moviedbapp.ui.main
 
 import android.util.Log
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -8,6 +9,8 @@ import me.martonpito.MovieDBApplication
 import me.martonpito.moviedbapp.base.BasePresenter
 import me.martonpito.moviedbapp.eventbus.EventBus
 import me.martonpito.moviedbapp.network.MovieDBServer
+import me.martonpito.moviedbapp.network.model.Movie
+import me.martonpito.moviedbapp.network.model.MovieDetails
 import javax.inject.Inject
 
 class MainPresenter: BasePresenter<IMainScreen> {
@@ -35,23 +38,50 @@ class MainPresenter: BasePresenter<IMainScreen> {
         compositeDisposable?.add(searchDisposable)
     }
 
-    fun getMovieList(searchText: String) {
-        val params = mapOf(
-            "query" to searchText,
+    fun getMovieList(searchText: String?) {
+        mainScreen?.showProgressBar()
+        val params = mutableMapOf(
             "api_key" to "43a7ea280d085bd0376e108680615c7f",
             "language" to "en-US",
-            "include_adult" to "false"
+            "include_adult" to "false",
+            "query" to (if(searchText.isNullOrBlank()) "a" else  searchText)
         )
         val call = server.apiService.getMovies(params)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ response ->
                 Log.d(TAG, response.toString())
-                mainScreen?.onMoviewListReady(response.results)
+                mainScreen?.hideProgressBar()
+                mainScreen?.onMovieListReady(response.results)
+                getBulkMovieDetails(response.results)
             }, { error ->
+                mainScreen?.hideProgressBar()
                 error.printStackTrace()
             })
         compositeDisposable?.add(call)
+    }
+
+    private fun getBulkMovieDetails(movieList: List<Movie>) {
+        val params = mapOf(
+            "api_key" to "43a7ea280d085bd0376e108680615c7f",
+            "language" to "en-US"
+        )
+        val calls = arrayListOf<Observable<MovieDetails>>()
+        for (movie in movieList) {
+            val call = server.apiService.getMovie(movie.id, params)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+            calls.add(call)
+        }
+        val disposableCalls = Observable.fromIterable(calls)
+            .flatMap { it }
+            .subscribe({ response ->
+                Log.d(TAG, response.toString())
+                mainScreen?.onMoviewDetailsReady(response)
+            }, { error ->
+                error.printStackTrace()
+            })
+        compositeDisposable?.add(disposableCalls)
     }
 
     override fun addView(view: IMainScreen) {

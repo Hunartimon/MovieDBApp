@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MovieDBApp</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="movie_budget">Movie Budget</string>
+    <string name="movie_overview">Movie overview</string>
+    <string name="movie_image">movie_image</string>
+    <string name="no_result_found">No result found.</string>
 </resources>

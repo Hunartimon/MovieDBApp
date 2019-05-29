@@ -4,11 +4,11 @@
                 android:layout_height="wrap_content">
     <ImageView
             android:id="@+id/iv_movie"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
             android:layout_margin="16dp"
             android:layout_centerVertical="true"
-            android:contentDescription="movie_image"/>
+            android:contentDescription="@string/movie_image"/>
 
     <LinearLayout
             android:layout_width="wrap_content"
@@ -16,22 +16,32 @@
             android:layout_toEndOf="@id/iv_movie"
             android:orientation="vertical"
             android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="16dp">
         <TextView
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="2"
-                android:text="Movie Title"/>
+                android:text="@string/movie_title"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:ellipsize="end"/>
+        <TextView
+                android:id="@+id/tv_budget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:text="@string/movie_budget"
+                android:textSize="12sp"
+                android:textStyle="italic"/>
         <TextView
                 android:id="@+id/tv_overview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/iv_movie"
-                android:layout_below="@id/tv_title"
-                android:layout_alignParentEnd="true"
                 android:maxLines="4"
-                android:text="Movie overview"/>
+                android:text="@string/movie_overview"
+                android:textSize="16sp"
+                android:ellipsize="end"/>
     </LinearLayout>
-
 </RelativeLayout>

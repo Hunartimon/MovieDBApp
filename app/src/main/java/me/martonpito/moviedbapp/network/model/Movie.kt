@@ -13,5 +13,6 @@ class Movie(@SerializedName("id")
             @SerializedName("vote_count")
             var voteCount: Int,
             @SerializedName("poster_path")
-            var posterPath: String
+            var posterPath: String,
+            var budget: Int? = null
 )
