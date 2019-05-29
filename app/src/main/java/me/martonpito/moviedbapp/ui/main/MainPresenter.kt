@@ -6,6 +6,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import me.martonpito.MovieDBApplication
+import me.martonpito.moviedbapp.R
 import me.martonpito.moviedbapp.base.BasePresenter
 import me.martonpito.moviedbapp.eventbus.EventBus
 import me.martonpito.moviedbapp.network.MovieDBServer
@@ -56,6 +57,7 @@ class MainPresenter: BasePresenter<IMainScreen> {
                 getBulkMovieDetails(response.results)
             }, { error ->
                 mainScreen?.hideProgressBar()
+                mainScreen?.showToast(mainScreen?.getActivityContext()?.getString(R.string.message_general_error) ?: "")
                 error.printStackTrace()
             })
         compositeDisposable?.add(call)
